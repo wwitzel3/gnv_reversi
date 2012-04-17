@@ -1,33 +1,41 @@
 from copy import deepcopy
+from collections import namedtuple
 
-def new_board():
-    board = []
-    row = ['.',]*8
-    [board.append(deepcopy(row)) for i in xrange(8)]
-    return board
+class Reversi(object):
+    empty = '.'
+    position = namedtuple('position', 'row, col, color')
+    start_positions = (
+        position._make([3,3,'B']),
+        position._make([3,4,'W']),
+        position._make([4,3,'W']),
+        position._make([4,4,'B']),
+    )
 
-def setup_board(board):
-    board[3][3] = 'B'
-    board[3][4] = 'W'
-    board[4][3] = 'W'
-    board[4][4] = 'B'
-    return board
+    def __init__(self):
+        self.board = self._new_board()
 
-def calulate_moves(board, turn):
-    oppenent_positions = []
-    pos_match = 'B' if turn == 'W' else 'W'
-    for r,row in enumerate(board):
-        for p,pos in enumerate(board):
-            if pos == pos_match:
-                oppenent_positions.append([r,p])
+    def _new_board(self):
+        row = [Reversi.empty,] * 8
+        board = [deepcopy(row) for i in xrange(8)]
+        for pos in Reversi.start_positions:
+            board[pos.row][pos.col] = pos.color
+        return board
 
-    for r,p in oppenent_positions:
-        if r == 0 or r == 7:
-            for i in xrange(p+1,8):
-                pass
-            for i in xrange(p-1,p):
-                pass
-        if p == 0 or p == 7:
-            pass
+    def reset(self):
+        self.board = self._new_board()
 
-_all__ = ['new_board', 'setup_board', 'calulate_moves',]
+    def valid_moves(self, turn):
+        opp = 'B' if turn == 'W' else 'B'
+
+        for r,row in enumerate(self.board):
+            for c,col in enumerate(row):
+                if col == turn:
+                    for i in xrange(c+1,8):
+                        if self.board[r][i] == Reversi.empty:
+                            break
+                        else:
+                            print self.board[r][i]
+                    for i in xrange(c-1,c):
+                        print self.board[r][i]
+
+_all__ = ['Reversi',]
